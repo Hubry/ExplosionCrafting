@@ -1,0 +1,16 @@
+[
+  {
+    "modid": "explosioncrafting",
+    "name": "Explosion Crafting",
+    "description": "Item + kaboom = new item?",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": ["Hubry"],
+    "credits": "Teeto_Kaziim for giving me this idea.",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
