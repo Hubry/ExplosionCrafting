@@ -43,7 +43,7 @@ public class ExplosionCrafting {
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 
 	@Mod.EventHandler
-	public static void postInit(FMLPostInitializationEvent e) {
+	public void postInit(FMLPostInitializationEvent e) {
 		ExplosionEventHandler.buildConversionMap();
 	}
 

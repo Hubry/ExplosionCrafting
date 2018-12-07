@@ -49,7 +49,7 @@ public abstract class BlockConversion implements IBlockConv {
 
 	@Override
 	public String toString() {
-		StringJoiner joiner = new StringJoiner(",", getClass().getName() + "{", "}");
+		StringJoiner joiner = new StringJoiner(",", getClass().getSimpleName() + "{", "}");
 		for (IBlockState input : inputs) {
 			joiner.add(input.toString());
 		}

@@ -51,44 +51,28 @@ public class MultiItemConversion extends ItemConversion {
 		this.inputs = ImmutableList.copyOf(inputs);
 	}
 
-	// Probably overcomplicated, TODO should split it into a few parts.
 	@Override
 	protected int processInputs(EntityItem item) {
 		// Get all items around the input and the amount of processes to do.
 		// NOTE: This list includes the entity passed here - and that's fine, as that entity
 		// is only directly referenced here for the amount of processes and to find all entities.
-		List<EntityItem> list = item.world.getEntitiesWithinAABB(EntityItem.class,
+		List<EntityItem> foundItems = item.world.getEntitiesWithinAABB(EntityItem.class,
 				SCAN_AREA.offset(item.posX, item.posY, item.posZ), e -> !(e.isDead || e.getItem().isEmpty()));
 
-		if (list.size() < inputs.size()) {
+		if (foundItems.size() < inputs.size()) {
 			return 0;
 		}
 		List<List<EntityItem>> itemsPerIngredientType = new ArrayList<>();
-		int processAmount = item.getItem().getCount() / inputs.get(0).getAmount();
+		int processAmount = Integer.MAX_VALUE;
 
 		// Gather all item entities to process. If any ingredient cannot be gathered, return with a 0.
-		// TODO gather first ingredient separately?
-		for (IIngredient ingredient : inputs) {
-			List<EntityItem> inputs = new ArrayList<>();
-
-			for (Iterator<EntityItem> iterator = list.iterator(); iterator.hasNext(); ) {
-				EntityItem entity = iterator.next();
-				if (ingredient.matches(CraftTweakerMC.getIItemStack(entity.getItem()))) {
-					inputs.add(entity);
-					iterator.remove();
-				}
-			}
-			if (inputs.isEmpty()) {
+		for (int i = 0; i < inputs.size(); i++) {
+			List<EntityItem> gatheredInput = getItemsForIngredient(foundItems, inputs.get(i));
+			if (gatheredInput.isEmpty()) {
 				return 0;
 			}
-			itemsPerIngredientType.add(inputs);
-		}
-
-		// Count all the items in the gathered items per ingredient. Check how many operations are possible to make.
-		for (int i = 0; i < itemsPerIngredientType.size(); i++) {
-			List<EntityItem> inputted = itemsPerIngredientType.get(i);
 			int totalAmount = 0;
-			for (EntityItem entity : inputted) {
+			for (EntityItem entity : gatheredInput) {
 				totalAmount += entity.getItem().getCount();
 			}
 			int processesPossible = totalAmount / inputs.get(i).getAmount();
@@ -98,32 +82,47 @@ public class MultiItemConversion extends ItemConversion {
 				}
 				processAmount = processesPossible;
 			}
+			itemsPerIngredientType.add(gatheredInput);
 		}
 
 		// Finally, process the entities, shrinking their stacks or killing them if drained entirely.
-		inputs:
 		for (int i = 0; i < itemsPerIngredientType.size(); i++) {
-			List<EntityItem> inputted = itemsPerIngredientType.get(i);
-			int inputAmount = processAmount * inputs.get(i).getAmount();
+			reduceStacks(itemsPerIngredientType.get(i), processAmount * inputs.get(i).getAmount());
+		}
 
-			for (EntityItem entity : inputted) {
-				ItemStack itemStack = entity.getItem();
-				if (itemStack.getCount() > inputAmount) {
-					itemStack.shrink(inputAmount);
-					entity.setItem(itemStack);
-					continue inputs;
-				} else {
-					inputAmount -= itemStack.getCount();
-					entity.setItem(ItemStack.EMPTY);
-					entity.setDead();
-					if (inputAmount == 0) {
-						continue inputs;
-					}
+		// Pass the processes to the caller to output the results.
+		return processAmount;
+	}
+
+	private void reduceStacks(List<EntityItem> items, int inputAmount) {
+		for (EntityItem item : items) {
+			ItemStack itemStack = item.getItem();
+			if (itemStack.getCount() > inputAmount) {
+				itemStack.shrink(inputAmount);
+				item.setItem(itemStack);
+				return;
+			} else {
+				inputAmount -= itemStack.getCount();
+				item.setItem(ItemStack.EMPTY);
+				item.setDead();
+				if (inputAmount == 0) {
+					return;
 				}
 			}
 		}
-		// Pass the processes to the caller to output the results.
-		return processAmount;
+	}
+
+	private List<EntityItem> getItemsForIngredient(List<EntityItem> items, IIngredient ingredient) {
+		List<EntityItem> gatheredInput = new ArrayList<>();
+
+		for (Iterator<EntityItem> iterator = items.iterator(); iterator.hasNext(); ) {
+			EntityItem entity = iterator.next();
+			if (ingredient.matches(CraftTweakerMC.getIItemStack(entity.getItem()))) {
+				gatheredInput.add(entity);
+				iterator.remove();
+			}
+		}
+		return gatheredInput;
 	}
 
 	@Override

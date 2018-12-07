@@ -78,7 +78,7 @@ public final class Utils {
 
 		if (maxDrops > 0 && maxDrops < toDrop) {
 			toDrop = maxDrops;
-			Collections.shuffle(stacks, world.rand); //Shuffle to not pick the first two items from the table. TODO pick random stacks instead, this is wasteful
+			Collections.shuffle(stacks, world.rand); //Shuffle to not just pick the first X items from the table. Kinda wasteful but whatever
 		}
 
 		for (int i = 0; i < toDrop; i++) {

@@ -71,17 +71,10 @@ public class ExplosionEventHandler {
 		}
 		for (IItemConv converter : itemConverters) {
 			for (Item item : converter.getMatchingItems()) {
-				itemConvertersMap.computeIfAbsent(item, (key) -> new ArrayList<>()).add(converter);
+				itemConvertersMap.computeIfAbsent(item, key -> new ArrayList<>()).add(converter);
 			}
 		}
-/*
-        ExplosionCrafting.LOGGER.info("Listing present converters:");
-        for (IItemConv itemConverter : itemConverters)
-            ExplosionCrafting.LOGGER.info("  {}", itemConverter);
 
-        for (IBlockConv blockConverter : blockConverters)
-            ExplosionCrafting.LOGGER.info("  {}", blockConverter);
-*/
 		blockConverters = null;
 		itemConverters = null;
 	}
@@ -98,34 +91,43 @@ public class ExplosionEventHandler {
 		LootContext context = Utils.createExplosionLootContext(world, explosion);
 
 		if (!blockConvertersMap.isEmpty()) {
-			world.profiler.startSection("blocks");
-			for (Iterator<BlockPos> iterator = e.getAffectedBlocks().iterator(); iterator.hasNext(); ) {
-				BlockPos pos = iterator.next();
-
-				// I had an air block check here but it seems to be faster without it. *shrugs*
-				IBlockConv conversion = getConversion(world.getBlockState(pos));
-				if (conversion != null) {
-					lastBlock = conversion;
-					if (conversion.processResult(world, pos, context)) {
-						iterator.remove();
-					}
-				}
-			}
-			world.profiler.endSection();
+			processBlocks(world, e.getAffectedBlocks(), context);
 		}
 		if (!itemConvertersMap.isEmpty() && !e.getAffectedEntities().isEmpty()) {
-			world.profiler.startSection("items");
-			for (Entity entity : e.getAffectedEntities()) {
-				if (entity instanceof EntityItem && !((EntityItem) entity).getItem().isEmpty()) {
-					EntityItem item = (EntityItem) entity;
-					IItemConv conversion = getConversion(item.getItem());
-					if (conversion != null) {
-						lastItem = conversion;
-						conversion.processResult(item, context);
-					}
+			processItems(world, e.getAffectedEntities(), context);
+		}
+
+		world.profiler.endSection();
+	}
+
+	private static void processBlocks(World world, List<BlockPos> positions, LootContext context) {
+		world.profiler.startSection("blocks");
+		for (Iterator<BlockPos> iterator = positions.iterator(); iterator.hasNext(); ) {
+			BlockPos pos = iterator.next();
+
+			// I had an air block check here but it seems to be faster without it. *shrugs*
+			IBlockConv conversion = getConversion(world.getBlockState(pos));
+			if (conversion != null) {
+				lastBlock = conversion;
+				if (conversion.processResult(world, pos, context)) {
+					iterator.remove();
 				}
 			}
-			world.profiler.endSection();
+		}
+		world.profiler.endSection();
+	}
+
+	private static void processItems(World world, List<Entity> entities, LootContext context) {
+		world.profiler.startSection("items");
+		for (Entity entity : entities) {
+			if (entity instanceof EntityItem && !((EntityItem) entity).getItem().isEmpty()) {
+				EntityItem item = (EntityItem) entity;
+				IItemConv conversion = getConversion(item.getItem());
+				if (conversion != null) {
+					lastItem = conversion;
+					conversion.processResult(item, context);
+				}
+			}
 		}
 		world.profiler.endSection();
 	}
@@ -153,5 +155,8 @@ public class ExplosionEventHandler {
 			}
 		}
 		return null;
+	}
+
+	private ExplosionEventHandler() {
 	}
 }
