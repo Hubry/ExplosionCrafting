@@ -20,29 +20,15 @@
  * SOFTWARE.
  */
 
-package hubry.explosh.conversion.item.output;
+package hubry.explosh.util;
 
-import hubry.explosh.util.Utils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootContext;
+import hubry.explosh.ExplosionCrafting;
+import net.minecraftforge.common.config.Config;
 
-public final class LootTableDropOutput extends ItemConversionOutput {
-	private final ResourceLocation lootTable;
-	private final int maxDrops;
+@Config(modid = ExplosionCrafting.MODID)
+public class ModConfig {
 
-	public LootTableDropOutput(ResourceLocation table, float chance, int maxDrops) {
-		super(chance);
-		this.lootTable = table;
-		this.maxDrops = maxDrops;
-	}
-
-	@Override
-	public void processResult(World world, double x, double y, double z, int processes, LootContext context) {
-		if (checkChance(world.rand)) {
-			for (int i = 0; i < processes; i++) {
-				Utils.dropLootTable(world, x, y, z, maxDrops, context, lootTable);
-			}
-		}
-	}
+	@Config.Name("Ignore invalid loot table names")
+	@Config.Comment("If enabled, warnings related to loot tables not being registered will not be issued")
+	public static boolean ignoreInvalidLootTableNames = false;
 }

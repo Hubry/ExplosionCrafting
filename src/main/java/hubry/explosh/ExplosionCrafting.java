@@ -24,6 +24,7 @@ package hubry.explosh;
 
 import hubry.explosh.conversion.block.IBlockConv;
 import hubry.explosh.conversion.item.IItemConv;
+import hubry.explosh.util.LootTableChecker;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +45,7 @@ public class ExplosionCrafting {
 
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent e) {
+		LootTableChecker.validateTables();
 		ExplosionEventHandler.buildConversionMap();
 	}
 

@@ -34,6 +34,7 @@ import hubry.explosh.conversion.block.entry.ItemDropEntry;
 import hubry.explosh.conversion.block.entry.ItemGroupDropEntry;
 import hubry.explosh.conversion.block.entry.LootTablePullEntry;
 import hubry.explosh.conversion.block.entry.PassEntry;
+import hubry.explosh.util.LootTableChecker;
 import hubry.explosh.util.Utils;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
@@ -89,7 +90,9 @@ public class BlockConversionBuilder {
 
 	@ZenMethod
 	public BlockConversionBuilder addLootTableDrop(String lootTable, @Optional int weight, @Optional int maxDrops) {
-		outputs.add(new LootTablePullEntry(new ResourceLocation(lootTable), weight, maxDrops));
+		ResourceLocation table = new ResourceLocation(lootTable);
+		LootTableChecker.checkTable(table);
+		outputs.add(new LootTablePullEntry(table, weight, maxDrops));
 		return this;
 	}
 

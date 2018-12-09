@@ -29,6 +29,8 @@ import hubry.explosh.conversion.item.MultiItemConversion;
 import hubry.explosh.conversion.item.SingleItemConversion;
 import hubry.explosh.conversion.item.output.ItemDropOutput;
 import hubry.explosh.conversion.item.output.LootTableDropOutput;
+import hubry.explosh.util.LootTableChecker;
+import net.minecraft.util.ResourceLocation;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
@@ -77,7 +79,9 @@ public class ItemConversionBuilder {
 
 	@ZenMethod
 	public ItemConversionBuilder addLootTableOutput(String name, @Optional float chance, @Optional int maxDrops) {
-		outputs.add(new LootTableDropOutput(name, chance, maxDrops));
+		ResourceLocation table = new ResourceLocation(name);
+		LootTableChecker.checkTable(table);
+		outputs.add(new LootTableDropOutput(table, chance, maxDrops));
 		return this;
 	}
 
