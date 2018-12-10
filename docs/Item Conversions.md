@@ -10,11 +10,12 @@ import mods.explosioncrafting.ItemConversionBuilder;
 ### Quick list of methods
 ```
 // Creating a builder and adding inputs
-static ItemConversionBuilder create(IIngredient input) 
+static ItemConversionBuilder create(IIngredient input) // Chance mode - all results are ran
+static ItemConversionBuilder createWeighted(IIngredient input) // Weighted mode - chances are turned into integer weights, only one is picked
 ItemConversionBuilder addInput(IIngredient input) 
 
 // Adding outputs. Builder methods - can be chained (and it is encouraged).
-ItemConversionBuilder addOutput(WeightedItemStack output) 
+ItemConversionBuilder addOutput(WeightedItemStack output, @Optional float chance) 
 ItemConversionBuilder addLootTableOutput(String name, @Optional float chance, @Optional int maxDrops)
 
 // Building and registering the conversion 
@@ -37,7 +38,8 @@ These are the types of outputs currently present:
 * Standard drop - drops a single item with a chance.
 * Loot table drop - drops from a loot table. You can set maximum amount of dropped items, by default it will drop all the generated loot.
 
-Unlike block conversions, all results are ran. A weighted mode is planned.
+In normal mode, unlike block conversions, all results are ran. 
+If using the weighted mode, the chance is converted to an integer by rounding into a weight, and only one result is picked.
 
 ```
 ItemConversionBuilder.create(<ore:gemDiamond>)
