@@ -20,21 +20,11 @@
  * SOFTWARE.
  */
 
-package hubry.explosh.conversion.item.output;
+package hubry.explosh.conversion.item.output.list;
 
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
 
-public interface ItemConversionOutput {
-	/**
-	 * Performs the effect of the conversion at the provided location.
-	 *
-	 * @param world     Location's world
-	 * @param x         x-coord of location
-	 * @param y         y-coord of location
-	 * @param z         z-coord of location
-	 * @param processes Amount of processes to perform at the location
-	 * @param context   Loot context of the conversion, provided for loot table drops.
-	 */
-	void processResult(World world, double x, double y, double z, int processes, LootContext context);
+public interface IOutputList {
+	void processResults(World world, double x, double y, double z, int processes, LootContext context);
 }

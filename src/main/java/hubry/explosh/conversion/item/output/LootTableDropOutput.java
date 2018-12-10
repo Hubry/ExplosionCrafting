@@ -27,22 +27,19 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
 
-public final class LootTableDropOutput extends ItemConversionOutput {
+public final class LootTableDropOutput implements ItemConversionOutput {
 	private final ResourceLocation lootTable;
 	private final int maxDrops;
 
-	public LootTableDropOutput(ResourceLocation table, float chance, int maxDrops) {
-		super(chance);
+	public LootTableDropOutput(ResourceLocation table, int maxDrops) {
 		this.lootTable = table;
 		this.maxDrops = maxDrops;
 	}
 
 	@Override
 	public void processResult(World world, double x, double y, double z, int processes, LootContext context) {
-		if (checkChance(world.rand)) {
-			for (int i = 0; i < processes; i++) {
-				Utils.dropLootTable(world, x, y, z, maxDrops, context, lootTable);
-			}
+		for (int i = 0; i < processes; i++) {
+			Utils.dropLootTable(world, x, y, z, maxDrops, context, lootTable);
 		}
 	}
 }

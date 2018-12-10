@@ -61,7 +61,7 @@ public class ExplosionEventHandler {
 
 	// Preinitialized to basically a null conversion. Never matching and never doing anything.
 	private static IBlockConv lastBlock = new WeightedBlockConversion(ImmutableList.of(), ImmutableList.of());
-	private static IItemConv lastItem = new SingleItemConversion(IngredientUnknown.INSTANCE, ImmutableList.of());
+	private static IItemConv lastItem = new SingleItemConversion(IngredientUnknown.INSTANCE, null);
 
 	static void buildConversionMap() {
 		for (IBlockConv converter : blockConverters) {

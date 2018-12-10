@@ -23,7 +23,7 @@
 package hubry.explosh.conversion.item;
 
 import com.google.common.collect.ImmutableList;
-import hubry.explosh.conversion.item.output.ItemConversionOutput;
+import hubry.explosh.conversion.item.output.list.IOutputList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -46,7 +46,7 @@ public class MultiItemConversion extends ItemConversion {
 
 	private final ImmutableList<IIngredient> inputs;
 
-	public MultiItemConversion(List<IIngredient> inputs, List<ItemConversionOutput> outputs) {
+	public MultiItemConversion(List<IIngredient> inputs, IOutputList outputs) {
 		super(outputs);
 		this.inputs = ImmutableList.copyOf(inputs);
 	}

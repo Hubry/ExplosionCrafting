@@ -20,21 +20,42 @@
  * SOFTWARE.
  */
 
-package hubry.explosh.conversion.item.output;
+package hubry.explosh.conversion.item.output.list;
 
+import hubry.explosh.conversion.item.output.ItemConversionOutput;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
+import org.apache.commons.lang3.tuple.Pair;
 
-public interface ItemConversionOutput {
-	/**
-	 * Performs the effect of the conversion at the provided location.
-	 *
-	 * @param world     Location's world
-	 * @param x         x-coord of location
-	 * @param y         y-coord of location
-	 * @param z         z-coord of location
-	 * @param processes Amount of processes to perform at the location
-	 * @param context   Loot context of the conversion, provided for loot table drops.
-	 */
-	void processResult(World world, double x, double y, double z, int processes, LootContext context);
+import java.util.List;
+
+public class WeightedOutputList implements IOutputList {
+	private final ItemConversionOutput[] outputs;
+	private final int[] weights;
+	private final int sumOfWeights;
+
+	public WeightedOutputList(List<Pair<ItemConversionOutput, Float>> pairs) {
+		this.outputs = new ItemConversionOutput[pairs.size()];
+		this.weights = new int[pairs.size()];
+		int sum = 0;
+		for (int i = 0; i < pairs.size(); i++) {
+			Pair<ItemConversionOutput, Float> pair = pairs.get(i);
+			outputs[i] = pair.getLeft();
+			int weight = Math.max(1, Math.round(pair.getRight()));
+			sum += weight;
+			weights[i] = weight;
+		}
+		this.sumOfWeights = sum;
+	}
+
+	@Override
+	public void processResults(World world, double x, double y, double z, int processes, LootContext context) {
+		int r = world.rand.nextInt(sumOfWeights);
+		for (int i = 0; i < outputs.length; i++) {
+			r -= weights[i];
+			if (r < 0) {
+				outputs[i].processResult(world, x, y, z, processes, context);
+			}
+		}
+	}
 }

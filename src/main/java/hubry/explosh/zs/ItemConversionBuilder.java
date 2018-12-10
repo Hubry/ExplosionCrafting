@@ -24,11 +24,11 @@ package hubry.explosh.zs;
 
 import hubry.explosh.ExplosionCrafting;
 import hubry.explosh.conversion.item.ItemConversion;
-import hubry.explosh.conversion.item.output.ItemConversionOutput;
 import hubry.explosh.conversion.item.MultiItemConversion;
 import hubry.explosh.conversion.item.SingleItemConversion;
 import hubry.explosh.conversion.item.output.ItemDropOutput;
 import hubry.explosh.conversion.item.output.LootTableDropOutput;
+import hubry.explosh.conversion.item.output.list.OutputListBuilder;
 import hubry.explosh.util.LootTableChecker;
 import net.minecraft.util.ResourceLocation;
 import crafttweaker.IAction;
@@ -49,16 +49,22 @@ import java.util.List;
 public class ItemConversionBuilder {
 	private final String name;
 	private final List<IIngredient> inputs = new ArrayList<>();
-	private final List<ItemConversionOutput> outputs = new ArrayList<>();
+	private final OutputListBuilder outputs;
 
-	public ItemConversionBuilder(IIngredient input) {
+	public ItemConversionBuilder(IIngredient input, OutputListBuilder outputs) {
+		this.outputs = outputs;
 		inputs.add(input);
 		name = input.toString();
 	}
 
 	@ZenMethod
 	public static ItemConversionBuilder create(IIngredient input) {
-		return new ItemConversionBuilder(input);
+		return new ItemConversionBuilder(input, OutputListBuilder.chance());
+	}
+
+	@ZenMethod
+	public static ItemConversionBuilder createWeighted(IIngredient input) {
+		return new ItemConversionBuilder(input, OutputListBuilder.weighted());
 	}
 
 	@ZenMethod
@@ -71,8 +77,8 @@ public class ItemConversionBuilder {
 	}
 
 	@ZenMethod
-	public ItemConversionBuilder addOutput(WeightedItemStack output) {
-		outputs.add(new ItemDropOutput(output));
+	public ItemConversionBuilder addOutput(WeightedItemStack output, @Optional float chance) {
+		outputs.add(new ItemDropOutput(output), chance);
 		return this;
 	}
 
@@ -80,7 +86,7 @@ public class ItemConversionBuilder {
 	public ItemConversionBuilder addLootTableOutput(String name, @Optional float chance, @Optional int maxDrops) {
 		ResourceLocation table = new ResourceLocation(name);
 		LootTableChecker.checkTable(table);
-		outputs.add(new LootTableDropOutput(table, chance, maxDrops));
+		outputs.add(new LootTableDropOutput(table, maxDrops), chance);
 		return this;
 	}
 
@@ -88,9 +94,9 @@ public class ItemConversionBuilder {
 	public void build() {
 		ItemConversion conversion;
 		if (inputs.size() == 1)
-			conversion = new SingleItemConversion(inputs.get(0), outputs);
+			conversion = new SingleItemConversion(inputs.get(0), outputs.build());
 		else
-			conversion = new MultiItemConversion(inputs, outputs);
+			conversion = new MultiItemConversion(inputs, outputs.build());
 		ExplosionCrafting.ADDITIONS.add(new Add(conversion, name));
 	}
 

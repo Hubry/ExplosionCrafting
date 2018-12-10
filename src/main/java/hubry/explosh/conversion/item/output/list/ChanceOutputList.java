@@ -20,21 +20,37 @@
  * SOFTWARE.
  */
 
-package hubry.explosh.conversion.item.output;
+package hubry.explosh.conversion.item.output.list;
 
+import hubry.explosh.conversion.item.output.ItemConversionOutput;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.loot.LootContext;
+import org.apache.commons.lang3.tuple.Pair;
 
-public interface ItemConversionOutput {
-	/**
-	 * Performs the effect of the conversion at the provided location.
-	 *
-	 * @param world     Location's world
-	 * @param x         x-coord of location
-	 * @param y         y-coord of location
-	 * @param z         z-coord of location
-	 * @param processes Amount of processes to perform at the location
-	 * @param context   Loot context of the conversion, provided for loot table drops.
-	 */
-	void processResult(World world, double x, double y, double z, int processes, LootContext context);
+import java.util.List;
+
+public class ChanceOutputList implements IOutputList {
+	private final ItemConversionOutput[] outputs;
+	private final float[] chances;
+
+	public ChanceOutputList(List<Pair<ItemConversionOutput, Float>> pairs) {
+		outputs = new ItemConversionOutput[pairs.size()];
+		chances = new float[pairs.size()];
+		for (int i = 0; i < pairs.size(); i++) {
+			Pair<ItemConversionOutput, Float> pair = pairs.get(i);
+			outputs[i] = pair.getLeft();
+			float chance = MathHelper.clamp(pair.getRight(), 0, 1);
+			chances[i] = chance > 0.0f ? chance : 1.0f;
+		}
+	}
+
+	@Override
+	public void processResults(World world, double x, double y, double z, int processes, LootContext context) {
+		for (int i = 0; i < outputs.length; i++) {
+			if (world.rand.nextFloat() <= chances[i]) {
+				outputs[i].processResult(world, x, y, z, processes, context);
+			}
+		}
+	}
 }

@@ -22,7 +22,7 @@
 
 package hubry.explosh.conversion.item;
 
-import hubry.explosh.conversion.item.output.ItemConversionOutput;
+import hubry.explosh.conversion.item.output.list.IOutputList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -31,7 +31,6 @@ import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -40,7 +39,7 @@ import java.util.stream.Collectors;
 public class SingleItemConversion extends ItemConversion {
 	private final IIngredient input;
 
-	public SingleItemConversion(IIngredient input, List<ItemConversionOutput> outputs) {
+	public SingleItemConversion(IIngredient input, IOutputList outputs) {
 		super(outputs);
 		this.input = input;
 	}

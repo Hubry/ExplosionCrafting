@@ -22,18 +22,15 @@
 
 package hubry.explosh.conversion.item;
 
-import com.google.common.collect.ImmutableList;
-import hubry.explosh.conversion.item.output.ItemConversionOutput;
+import hubry.explosh.conversion.item.output.list.IOutputList;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.world.storage.loot.LootContext;
 
-import java.util.List;
+public abstract class ItemConversion implements IItemConv {
+	private final IOutputList outputs;
 
-public abstract class ItemConversion implements IItemConv { //todo weighted mode?
-	private final ImmutableList<ItemConversionOutput> outputs;
-
-	protected ItemConversion(List<ItemConversionOutput> outputs) {
-		this.outputs = ImmutableList.copyOf(outputs);
+	protected ItemConversion(IOutputList outputs) {
+		this.outputs = outputs;
 	}
 
 	/**
@@ -47,10 +44,7 @@ public abstract class ItemConversion implements IItemConv { //todo weighted mode
 	@Override
 	public void processResult(EntityItem item, LootContext context) {
 		int processes = processInputs(item);
-
-		for (ItemConversionOutput output : outputs) {
-			output.processResult(item.world, item.posX, item.posY, item.posZ, processes, context);
-		}
+		outputs.processResults(item.world, item.posX, item.posY, item.posZ, processes, context);
 	}
 
 }

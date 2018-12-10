@@ -29,20 +29,21 @@ import net.minecraft.world.storage.loot.LootContext;
 import crafttweaker.api.item.WeightedItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
 
-public final class ItemDropOutput extends ItemConversionOutput {
+public final class ItemDropOutput implements ItemConversionOutput {
 	private final ItemStack stack;
+	private final float conversionRatio;
 
 	public ItemDropOutput(WeightedItemStack stack) {
-		super(stack.getChance());
 		this.stack = CraftTweakerMC.getItemStack(stack.getStack());
+		this.conversionRatio = stack.getChance();
 	}
 
 	@Override
 	public void processResult(World world, double x, double y, double z, int processes, LootContext context) {
 		int resultAmount = stack.getCount() * processes;
-		if (chance < 1.0f) {                            // If you input 50 items and chance is 80%, you'll always get 40 items.
-			float resultAvg = resultAmount * chance;    // If you input 51 items, you have an 80% chance to get 41 and 20% chance to get 40.
-			resultAmount = (int) resultAvg;             // This is less of a "chance" and more of "% you get."
+		if (conversionRatio < 1.0f) {                         // If you input 50 items and chance is 80%, you'll always get 40 items.
+			float resultAvg = resultAmount * conversionRatio; // If you input 51 items, you have an 80% chance to get 41 and 20% chance to get 40.
+			resultAmount = (int) resultAvg;
 			if (world.rand.nextFloat() < resultAvg - resultAmount) {
 				resultAmount++;
 			}
