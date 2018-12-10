@@ -122,7 +122,7 @@ public class BlockConversionBuilder {
 			BlockConversion conversion = outputs.size() == 1
 					? new SimpleBlockConversion(this.stateInputs, outputs.get(0))
 					: new WeightedBlockConversion(this.stateInputs, outputs);
-			CraftTweakerAPI.apply(new Add(conversion, name));
+			ExplosionCrafting.ADDITIONS.add(new Add(conversion, name));
 		}
 	}
 

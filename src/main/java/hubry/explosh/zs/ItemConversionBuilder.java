@@ -31,7 +31,6 @@ import hubry.explosh.conversion.item.output.ItemDropOutput;
 import hubry.explosh.conversion.item.output.LootTableDropOutput;
 import hubry.explosh.util.LootTableChecker;
 import net.minecraft.util.ResourceLocation;
-import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import crafttweaker.annotations.ZenRegister;
 import crafttweaker.api.item.IIngredient;
@@ -92,7 +91,7 @@ public class ItemConversionBuilder {
 			conversion = new SingleItemConversion(inputs.get(0), outputs);
 		else
 			conversion = new MultiItemConversion(inputs, outputs);
-		CraftTweakerAPI.apply(new Add(conversion, name));
+		ExplosionCrafting.ADDITIONS.add(new Add(conversion, name));
 	}
 
 	static class Add implements IAction {

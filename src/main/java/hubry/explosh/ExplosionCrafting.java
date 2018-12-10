@@ -29,6 +29,11 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import crafttweaker.CraftTweakerAPI;
+import crafttweaker.IAction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(
 		modid = ExplosionCrafting.MODID,
@@ -43,8 +48,16 @@ public class ExplosionCrafting {
 
 	public static final Logger LOGGER = LogManager.getLogger(MODID);
 
+	public static List<IAction> ADDITIONS = new ArrayList<>();
+
 	@Mod.EventHandler
 	public void postInit(FMLPostInitializationEvent e) {
+		try {
+			ADDITIONS.forEach(IAction::apply);
+		} catch (Exception ex) {
+			CraftTweakerAPI.logError("There was a problem applying an ExplosionCrafting action", ex);
+		}
+		ADDITIONS.clear();
 		LootTableChecker.validateTables();
 		ExplosionEventHandler.buildConversionMap();
 	}
