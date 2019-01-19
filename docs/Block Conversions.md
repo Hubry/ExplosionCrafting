@@ -40,13 +40,15 @@ var conv3 = BlockConversionBuilder.of(<blockstate:minecraft:stone_stairs>.withMa
 
 #### Quick blockstate matcher guide
 
-The simplest matcher is a blockstate, obtained through CraftTweaker's blockstate bracket handler, like: `<blockstate:minecraft:dirt>` or `<blockstate:minecraft:log:variant=spruce>`. Note that this only matches a single block state - the dirt state won't match dirt with snow on top, podzol or coarse dirt - only plain dirt with no snow.
+The simplest matcher is a blockstate, obtained through CraftTweaker's blockstate bracket handler, like: `<blockstate:minecraft:dirt>` or `<blockstate:minecraft:log:variant=spruce>`. Note that this only matches a single block state - the dirt state won't match podzol or coarse dirt - only plain dirt. In addition, blocks in world with states that are not saved (like fence connections or snowy dirt) will be treated as if they had the default value of that property (freestanding fences, non-snowy dirt).
 
-Using `IBlockState#withMatchedValuesForProperty(String property, String... values)` allows to match one property with specified values, for example, `<blockstate:minecraft:dirt>.withMatchedValuesForProperty("snowy", "false")` will match dirt of any type, as long as it's not with snow on top.
+**Note:** you can view all properties of a certain block by looking at it with the F3 debug view enabled - the blockstate info is displayed on the right side of the screen.
+
+Using `IBlockState#withMatchedValuesForProperty(String property, String... values)` allows to match one property with specified values and ignore others, for example, `<blockstate:minecraft:piston>.withMatchedValuesForProperty("extended", "false")` will match pistons of any direction, as long as it's not extended.
 
 Using `IBlockState#matchBlock()` will match any state of that block, eg. `<blockstate:minecraft:dirt>.matchBlock()` will ignore the dirt type.
 
-Lastly, blockstate matchers can be combined by ORing (`|`) them - eg. `<blockstate:minecraft:dirt> | <blockstate:minecraft:log>.matchBlock()` will match normal dirt and any logs.
+Lastly, blockstate matchers can be combined by ORing (`|`) them - eg. `<blockstate:minecraft:dirt> | <blockstate:minecraft:log>.matchBlock()` will match normal dirt and the basic 4 log types.
 
 ### Adding results and building the conversion
 

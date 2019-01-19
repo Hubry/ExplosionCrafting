@@ -11,7 +11,7 @@ import mods.explosioncrafting.ItemConversionBuilder;
 ```
 // Creating a builder and adding inputs
 static ItemConversionBuilder create(IIngredient input) // Chance mode - all results are ran
-static ItemConversionBuilder createWeighted(IIngredient input) // Weighted mode - chances are turned into integer weights, only one is picked
+static ItemConversionBuilder createWeighted(IIngredient input) // Experimental: weighted mode - chances are turned into integer weights, only one is picked
 ItemConversionBuilder addInput(IIngredient input) 
 
 // Adding outputs. Builder methods - can be chained (and it is encouraged).
